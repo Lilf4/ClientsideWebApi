@@ -10777,56 +10777,114 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var jquery_1 = __importDefault(__webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"));
-var test = "";
-(0, jquery_1.default)(document).ready(getCityInfo);
-//const response = await fetch(`https://cityinfo.buchwaldshave34.dk/api/Country`);
-//const json = await response.json();
-//console.log(json);
-//test += "<tr>";
-//test += "<th>Country ID</th>";
-//test += "<th>CountryName</th>";
-//test += "</tr>";
-//for (let i = 0; i < json.length; i++) {
-//	test += createColumn([json[i].countryID, json[i].countryName]);
-//	console.log(cityJson);
-//}
-//$('#CountryTable').html(test);
-function getCityInfo() {
+var baseUri = "https://cityinfo80.buchwaldshave34.dk/api/";
+(0, jquery_1.default)(document).ready(getCountries);
+function getCountries() {
     return __awaiter(this, void 0, void 0, function () {
-        var constructedTable, cityResponse, cityJson, keys, C, i, j;
+        var Response, Json, C, _loop_1, i;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    constructedTable = "";
-                    return [4 /*yield*/, fetch("https://cityinfo.buchwaldshave34.dk/api/City")];
+                    (0, jquery_1.default)('#CountryTable').empty();
+                    (0, jquery_1.default)('#CityTable').empty();
+                    (0, jquery_1.default)('#SpokenLanguages').empty();
+                    (0, jquery_1.default)('#PointsOfInterest').empty();
+                    return [4 /*yield*/, fetch("".concat(baseUri, "Country/GetCountries"), {
+                            method: 'GET'
+                        })];
                 case 1:
-                    cityResponse = _a.sent();
-                    return [4 /*yield*/, cityResponse.json()];
+                    Response = _a.sent();
+                    return [4 /*yield*/, Response.json()];
                 case 2:
-                    cityJson = _a.sent();
-                    keys = Object.keys(cityJson[0]);
-                    constructedTable += createColumn(keys, "th");
+                    Json = _a.sent();
+                    (0, jquery_1.default)('#CountryTable').append((0, jquery_1.default)('<tr>').append((0, jquery_1.default)('<th>').append('Countries')));
                     C = [];
-                    for (i = 0; i < cityJson.length; i++) {
-                        for (j = 0; j < keys.length; j++) {
-                            C.push(cityJson[i][keys[j]]);
-                        }
-                        constructedTable += createColumn(C, "td");
-                        C = [];
+                    _loop_1 = function (i) {
+                        (0, jquery_1.default)('#CountryTable')
+                            .append((0, jquery_1.default)('<tr>')
+                            .append((0, jquery_1.default)('<td>')
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return getCountryCities(Json[i]['countryID']); }).text(Json[i]['countryName']))));
+                    };
+                    for (i = 0; i < Json.length; i++) {
+                        _loop_1(i);
                     }
-                    (0, jquery_1.default)('#CountryTable').html(constructedTable);
                     return [2 /*return*/];
             }
         });
     });
 }
-function createColumn(cols, type) {
-    var column = "<tr>";
-    for (var i = 0; i < cols.length; i++) {
-        column += "<".concat(type, ">").concat(cols[i], "</").concat(type, ">");
-    }
-    column += "</tr>";
-    return column;
+function test() {
+    console.log("test");
+}
+function getCountryCities(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var Response, Json, C, _loop_2, i;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    (0, jquery_1.default)('#CityTable').empty();
+                    (0, jquery_1.default)('#SpokenLanguages').empty();
+                    (0, jquery_1.default)('#PointsOfInterest').empty();
+                    return [4 /*yield*/, fetch("".concat(baseUri, "City/GetCitiesInCountry/").concat(id), {
+                            method: 'GET'
+                        })];
+                case 1:
+                    Response = _a.sent();
+                    return [4 /*yield*/, Response.json()];
+                case 2:
+                    Json = _a.sent();
+                    (0, jquery_1.default)('#CityTable').append((0, jquery_1.default)('<tr>').append((0, jquery_1.default)('<th>').append('Cities')));
+                    C = [];
+                    _loop_2 = function (i) {
+                        (0, jquery_1.default)('#CityTable')
+                            .append((0, jquery_1.default)('<tr>')
+                            .append((0, jquery_1.default)('<td>')
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return getCityInfo(Json[i]['cityId']); }).text(Json[i]['cityName']))));
+                    };
+                    for (i = 0; i < Json.length; i++) {
+                        _loop_2(i);
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function getCityInfo(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        var Response, Json, i, i;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    //Clear related tables
+                    (0, jquery_1.default)('#SpokenLanguages').empty();
+                    (0, jquery_1.default)('#PointsOfInterest').empty();
+                    return [4 /*yield*/, fetch("".concat(baseUri, "City/GetCity/").concat(id), {
+                            method: 'GET'
+                        })];
+                case 1:
+                    Response = _a.sent();
+                    return [4 /*yield*/, Response.json()];
+                case 2:
+                    Json = _a.sent();
+                    (0, jquery_1.default)('#SpokenLanguages').append((0, jquery_1.default)('<tr>').append((0, jquery_1.default)('<th>').append('Spoken Languages')));
+                    (0, jquery_1.default)('#PointsOfInterest').append(((0, jquery_1.default)('<tr>').append((0, jquery_1.default)('<th>').append('Points of Interest')).append((0, jquery_1.default)('<th>').append('Description'))));
+                    for (i = 0; i < Json['pointsOfInterest'].length; i++) {
+                        (0, jquery_1.default)('#PointsOfInterest')
+                            .append((0, jquery_1.default)('<tr>')
+                            .append(((0, jquery_1.default)('<td>')
+                            .append(((0, jquery_1.default)('<p>')).text(Json['pointsOfInterest'][i].pointOfInterestName))))
+                            .append(((0, jquery_1.default)('<td>').append(((0, jquery_1.default)('<p>')).text(Json['pointsOfInterest'][i].pointOfInterestDescription)))));
+                    }
+                    for (i = 0; i < Json['cityLanguages'].length; i++) {
+                        (0, jquery_1.default)('#SpokenLanguages')
+                            .append((0, jquery_1.default)('<tr>')
+                            .append((0, jquery_1.default)('<td>')
+                            .append(((0, jquery_1.default)('<p>')).text(Json['cityLanguages'][i]['language'].languageName))));
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
 
 

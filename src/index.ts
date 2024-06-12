@@ -2,53 +2,81 @@ import $ from 'jquery';
 
 
 
-let test: string = "";
-$(document).ready(getCityInfo);
-	//const response = await fetch(`https://cityinfo.buchwaldshave34.dk/api/Country`);
-	//const json = await response.json();
-	//console.log(json);
-	//test += "<tr>";
-	//test += "<th>Country ID</th>";
-	//test += "<th>CountryName</th>";
-	//test += "</tr>";
-	//for (let i = 0; i < json.length; i++) {
-	//	test += createColumn([json[i].countryID, json[i].countryName]);
-
-		
-
-	//	console.log(cityJson);
-	//}
-
-	//$('#CountryTable').html(test);
+let baseUri: string = "https://cityinfo80.buchwaldshave34.dk/api/";
+$(document).ready(getCountries);
 
 
-async function getCityInfo() {
-	let constructedTable: string = "";
+async function getCountries() {
+	$('#CountryTable').empty();
+	$('#CityTable').empty();
+	$('#SpokenLanguages').empty();
+	$('#PointsOfInterest').empty();
 
-	let cityResponse = await fetch(`https://cityinfo.buchwaldshave34.dk/api/City`);
-	let cityJson = await cityResponse.json();
-	var keys = Object.keys(cityJson[0]);
-	constructedTable += createColumn(keys, "th");
+	let Response = await fetch(`${baseUri}Country/GetCountries`, {
+		method: 'GET'
+	});
+	let Json = await Response.json();
+
+	$('#CountryTable').append($('<tr>').append($('<th>').append('Countries')));
+
 	let C: string[] = [];
-	for (let i = 0; i < cityJson.length; i++) {
-		for(let j = 0; j < keys.length; j++) {
-			C.push(cityJson[i][keys[j]]);
-		}
-		constructedTable += createColumn(C, "td");
-		C = [];
+	for (let i = 0; i < Json.length; i++) {
+		$('#CountryTable')
+		.append($('<tr>')
+		.append($('<td>')
+		.append(($('<Button>')).on('click', () => getCountryCities(Json[i]['countryID'])).text(Json[i]['countryName']))));
 	}
-	
-
-	$('#CountryTable').html(constructedTable);
+}
+function test() {
+	console.log("test");
 }
 
+async function getCountryCities(id: number) {
+	$('#CityTable').empty();
+	$('#SpokenLanguages').empty();
+	$('#PointsOfInterest').empty();
 
-function createColumn(cols: string[], type: string): string {
-	
-	let column: string = "<tr>";
-	for (let i = 0; i < cols.length; i++) {
-		column += `<${type}>${cols[i]}</${type}>`;
+	let Response = await fetch(`${baseUri}City/GetCitiesInCountry/${id}`, {
+		method: 'GET'
+	});
+	let Json = await Response.json();
+
+	$('#CityTable').append($('<tr>').append($('<th>').append('Cities')));
+
+	let C: string[] = [];
+	for (let i = 0; i < Json.length; i++) {
+		$('#CityTable')
+		.append($('<tr>')
+		.append($('<td>')
+		.append(($('<Button>')).on('click', () => getCityInfo(Json[i]['cityId'])).text(Json[i]['cityName']))));
 	}
-	column += "</tr>";
-	return column;
+}
+
+async function getCityInfo(id: number) {
+	//Clear related tables
+	$('#SpokenLanguages').empty();
+	$('#PointsOfInterest').empty();
+
+	let Response = await fetch(`${baseUri}City/GetCity/${id}`, {
+		method: 'GET'
+	});
+	let Json = await Response.json();
+
+	$('#SpokenLanguages').append($('<tr>').append($('<th>').append('Spoken Languages')));
+	$('#PointsOfInterest').append(($('<tr>').append($('<th>').append('Points of Interest')).append($('<th>').append('Description'))));
+
+	for (let i = 0; i < Json['pointsOfInterest'].length; i++) {
+		$('#PointsOfInterest')
+		.append($('<tr>')
+		.append(($('<td>')
+		.append(($('<p>')).text(Json['pointsOfInterest'][i].pointOfInterestName))))
+		.append(($('<td>').append(($('<p>')).text(Json['pointsOfInterest'][i].pointOfInterestDescription)))));
+	}
+
+	for (let i = 0; i < Json['cityLanguages'].length; i++) {
+		$('#SpokenLanguages')
+		.append($('<tr>')
+		.append($('<td>')
+		.append(($('<p>')).text(Json['cityLanguages'][i]['language'].languageName))));
+	}
 }
