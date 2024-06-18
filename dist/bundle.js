@@ -10789,6 +10789,7 @@ function getCountries() {
                     (0, jquery_1.default)('#CityTable').empty();
                     (0, jquery_1.default)('#SpokenLanguages').empty();
                     (0, jquery_1.default)('#PointsOfInterest').empty();
+                    (0, jquery_1.default)('#CountryCityTitle').empty();
                     return [4 /*yield*/, fetch("".concat(baseUri, "Country/GetCountries"), {
                             method: 'GET'
                         })];
@@ -10797,13 +10798,19 @@ function getCountries() {
                     return [4 /*yield*/, Response.json()];
                 case 2:
                     Json = _a.sent();
-                    (0, jquery_1.default)('#CountryTable').append((0, jquery_1.default)('<tr>').append((0, jquery_1.default)('<th>').append('Countries')));
+                    (0, jquery_1.default)('#CountryTable')
+                        .append((0, jquery_1.default)('<tr>')
+                        .append((0, jquery_1.default)('<th>')
+                        .append('Countries')
+                        .append((0, jquery_1.default)('<Button>').on('click', function () { return createCountry(""); }).text('Add Country'))));
                     C = [];
                     _loop_1 = function (i) {
                         (0, jquery_1.default)('#CountryTable')
                             .append((0, jquery_1.default)('<tr>')
                             .append((0, jquery_1.default)('<td>')
-                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return getCountryCities(Json[i]['countryID']); }).text(Json[i]['countryName']))));
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return getCountryCities(Json[i]['countryID'], Json[i]['countryName']); }).text(Json[i]['countryName']))
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return editCountry(Json[i]['countryID'], Json[i]['countryName']); }).text('Edit'))
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return deleteCountry(Json[i]['countryID']); }).text('Delete'))));
                     };
                     for (i = 0; i < Json.length; i++) {
                         _loop_1(i);
@@ -10813,10 +10820,66 @@ function getCountries() {
         });
     });
 }
-function test() {
-    console.log("test");
+function createCountry(countryName) {
+    return __awaiter(this, void 0, void 0, function () {
+        var name, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    name = prompt("Name of country", "");
+                    return [4 /*yield*/, fetch("".concat(baseUri, "Country/CreateCountry"), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ countryName: name })
+                        })];
+                case 1:
+                    response = _a.sent();
+                    getCountries();
+                    return [2 /*return*/];
+            }
+        });
+    });
 }
-function getCountryCities(id) {
+function editCountry(countryId, countryName) {
+    return __awaiter(this, void 0, void 0, function () {
+        var name;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    name = prompt("Name of country", countryName);
+                    return [4 /*yield*/, fetch("".concat(baseUri, "Country/UpdateCountry/").concat(countryId), {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ countryName: name, countryID: countryId })
+                        })];
+                case 1:
+                    _a.sent();
+                    getCountries();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function deleteCountry(countryId) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetch("".concat(baseUri, "Country/DeleteCountry/").concat(countryId), {
+                        method: 'DELETE'
+                    })];
+                case 1:
+                    _a.sent();
+                    getCountries();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function getCountryCities(id, countryName) {
     return __awaiter(this, void 0, void 0, function () {
         var Response, Json, C, _loop_2, i;
         return __generator(this, function (_a) {
@@ -10825,6 +10888,7 @@ function getCountryCities(id) {
                     (0, jquery_1.default)('#CityTable').empty();
                     (0, jquery_1.default)('#SpokenLanguages').empty();
                     (0, jquery_1.default)('#PointsOfInterest').empty();
+                    (0, jquery_1.default)('#CountryCityTitle').empty();
                     return [4 /*yield*/, fetch("".concat(baseUri, "City/GetCitiesInCountry/").concat(id), {
                             method: 'GET'
                         })];
@@ -10833,13 +10897,19 @@ function getCountryCities(id) {
                     return [4 /*yield*/, Response.json()];
                 case 2:
                     Json = _a.sent();
-                    (0, jquery_1.default)('#CityTable').append((0, jquery_1.default)('<tr>').append((0, jquery_1.default)('<th>').append('Cities')));
+                    (0, jquery_1.default)('#CityTable')
+                        .append((0, jquery_1.default)('<tr>')
+                        .append((0, jquery_1.default)('<th>')
+                        .append('Cities')
+                        .append((0, jquery_1.default)('<Button>').on('click', function () { return createCity(id); }).text('Add City'))));
                     C = [];
                     _loop_2 = function (i) {
                         (0, jquery_1.default)('#CityTable')
                             .append((0, jquery_1.default)('<tr>')
                             .append((0, jquery_1.default)('<td>')
-                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return getCityInfo(Json[i]['cityId']); }).text(Json[i]['cityName']))));
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return getCityInfo(Json[i]['cityId'], countryName, Json[i]['cityName']); }).text(Json[i]['cityName']))
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return editCity(Json[i]['cityId'], id, Json[i]['cityName']); }).text('Edit'))
+                            .append(((0, jquery_1.default)('<Button>')).on('click', function () { return deleteCity(Json[i]['cityId']); }).text('Delete'))));
                     };
                     for (i = 0; i < Json.length; i++) {
                         _loop_2(i);
@@ -10849,7 +10919,66 @@ function getCountryCities(id) {
         });
     });
 }
-function getCityInfo(id) {
+function createCity(countryId) {
+    return __awaiter(this, void 0, void 0, function () {
+        var cityName, response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    cityName = prompt("Name of city", "");
+                    return [4 /*yield*/, fetch("".concat(baseUri, "City/CreateCity"), {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ cityName: cityName, countryID: countryId, cityDescription: "" })
+                        })];
+                case 1:
+                    response = _a.sent();
+                    getCountries();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function editCity(cityId, countryId, cityName) {
+    return __awaiter(this, void 0, void 0, function () {
+        var test;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    test = prompt("Name of city", cityName);
+                    return [4 /*yield*/, fetch("".concat(baseUri, "City/UpdateCity/").concat(cityId), {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ cityName: test, cityDescription: "", cityId: cityId, countryID: countryId })
+                        })];
+                case 1:
+                    _a.sent();
+                    getCountries();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function deleteCity(cityId) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, fetch("".concat(baseUri, "City/DeleteCity/").concat(cityId), {
+                        method: 'DELETE'
+                    })];
+                case 1:
+                    _a.sent();
+                    getCountries();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function getCityInfo(id, countryName, cityName) {
     return __awaiter(this, void 0, void 0, function () {
         var Response, Json, i, i;
         return __generator(this, function (_a) {
@@ -10881,6 +11010,7 @@ function getCityInfo(id) {
                             .append((0, jquery_1.default)('<td>')
                             .append(((0, jquery_1.default)('<p>')).text(Json['cityLanguages'][i]['language'].languageName))));
                     }
+                    (0, jquery_1.default)('#CountryCityTitle').text("".concat(countryName, ", ").concat(cityName));
                     return [2 /*return*/];
             }
         });

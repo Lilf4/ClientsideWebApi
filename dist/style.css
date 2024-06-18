@@ -17,6 +17,16 @@ tr td {
 tr:nth-child(even) {
 	background-color: rgb(255, 255, 255);
 }
+
 tr:nth-child(odd) {
 	background-color: rgb(126, 126, 126);
+}
+
+.row { 
+	display: flex; 
+	justify-content: space-evenly;
+} 
+
+.column { 
+	float: left;
 }
